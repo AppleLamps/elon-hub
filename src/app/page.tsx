@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { ExternalLink, Clock } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from 'recharts';
 
@@ -38,6 +38,7 @@ export default function Home() {
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [nextUpdate, setNextUpdate] = useState<Date | null>(null);
   const [timeUntilUpdate, setTimeUntilUpdate] = useState('');
+  const refreshingRef = useRef(false);
 
   const categories = [
     { id: 'all', label: 'All News' },
@@ -68,6 +69,7 @@ export default function Home() {
       console.error('Fetch error:', error);
     } finally {
       setLoading(false);
+      refreshingRef.current = false;
     }
   }, []);
 
@@ -95,8 +97,13 @@ export default function Home() {
       
       if (diff <= 0) {
         setTimeUntilUpdate('Updating soon...');
-        // Refresh after the scheduled update time
-        setTimeout(fetchArticles, 5000);
+        // Schedule refresh only if not already refreshing
+        if (!refreshingRef.current) {
+          refreshingRef.current = true;
+          setTimeout(() => {
+            fetchArticles();
+          }, 5000);
+        }
         return;
       }
       
