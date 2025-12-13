@@ -1,0 +1,36 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/update",
+      "schedule": "*/30 * * * *"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/articles",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "s-maxage=60, stale-while-revalidate=300"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "s-maxage=300, stale-while-revalidate"
+        }
+      ]
+    }
+  ],
+  "functions": {
+    "src/app/api/cron/update/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/radar/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}
