@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/update",
-      "schedule": "*/30 * * * *"
+      "schedule": "0 6 * * *"
     }
   ],
   "headers": [
@@ -27,7 +27,7 @@
   ],
   "functions": {
     "src/app/api/cron/update/route.ts": {
-      "maxDuration": 60
+      "maxDuration": 300
     },
     "src/app/api/radar/route.ts": {
       "maxDuration": 60
