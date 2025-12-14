@@ -47,16 +47,21 @@ const COMPANY_CONFIGS = [
   },
 ];
 
-// General news sources for Elon Musk coverage
-const GENERAL_NEWS_DOMAINS = [
+// General news sources for Elon Musk coverage (split into groups of max 5 for API limit)
+const GENERAL_NEWS_DOMAINS_GROUP1 = [
   'reuters.com',
   'bloomberg.com',
   'wsj.com',
   'forbes.com',
-  'businessinsider.com',
   'cnbc.com',
+];
+
+const GENERAL_NEWS_DOMAINS_GROUP2 = [
+  'businessinsider.com',
   'bbc.com',
   'theguardian.com',
+  'nytimes.com',
+  'washingtonpost.com',
 ];
 
 // Verify cron secret to prevent unauthorized access
@@ -198,9 +203,9 @@ Output structured JSON only:
   }
 }
 
-// Fetch general Elon Musk news from major outlets
-async function fetchGeneralElonNews(): Promise<ParsedPost[]> {
-  console.log('Fetching general Elon Musk news...');
+// Fetch general Elon Musk news from major outlets (single domain group)
+async function fetchGeneralElonNewsFromGroup(domains: string[], groupName: string): Promise<ParsedPost[]> {
+  console.log(`Fetching general Elon Musk news (${groupName})...`);
 
   const query = `Latest news about Elon Musk from major news outlets in the last 30 days.
 
@@ -234,18 +239,28 @@ Output structured JSON only:
       prompt: query,
       tools: {
         web_search: xai.tools.webSearch({
-          allowedDomains: GENERAL_NEWS_DOMAINS,
+          allowedDomains: domains,
         }),
       },
     });
 
     const parsed = parseJsonResponse(result.text);
-    console.log(`Found ${parsed.posts?.length || 0} general news articles`);
+    console.log(`Found ${parsed.posts?.length || 0} news articles from ${groupName}`);
     return parsed.posts || [];
   } catch (error) {
-    console.error('Error fetching general news:', error);
+    console.error(`Error fetching news from ${groupName}:`, error);
     return [];
   }
+}
+
+// Fetch general Elon Musk news from all major outlets (parallel calls)
+async function fetchGeneralElonNews(): Promise<ParsedPost[]> {
+  const [group1Results, group2Results] = await Promise.all([
+    fetchGeneralElonNewsFromGroup(GENERAL_NEWS_DOMAINS_GROUP1, 'Financial/Business'),
+    fetchGeneralElonNewsFromGroup(GENERAL_NEWS_DOMAINS_GROUP2, 'General Media'),
+  ]);
+
+  return [...group1Results, ...group2Results];
 }
 
 // Analyze trends and sentiment across all collected data
