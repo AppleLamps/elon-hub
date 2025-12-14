@@ -17,7 +17,7 @@ const COMPANY_CONFIGS = [
   },
   {
     name: 'SpaceX',
-    handles: ['elonmusk', 'SpaceX', 'SpaceXStarship'],
+    handles: ['elonmusk', 'SpaceX'],
     newsDomains: ['spacenews.com', 'nasaspaceflight.com', 'spaceflightnow.com', 'arstechnica.com'],
     keywords: 'SpaceX, Starship, Falcon 9, Falcon Heavy, Starlink launch, Dragon, ISS, rocket launch, Mars mission, Elon Musk SpaceX',
   },
@@ -101,7 +101,7 @@ async function fetchCompanyXData(config: typeof COMPANY_CONFIGS[0], fromDate: st
 
   const query = `Latest posts, news, and announcements from ${config.name} (handles: ${config.handles.join(', ')}).
 
-Search for posts from the last 24 hours. Focus on:
+Search for posts from the last 30 days. Focus on:
 - Product announcements and updates
 - Company news and milestones
 - Technical achievements
@@ -155,7 +155,7 @@ async function fetchCompanyNewsData(config: typeof COMPANY_CONFIGS[0]): Promise<
 
   const query = `Latest news articles about ${config.name} and ${config.keywords}.
 
-Search for recent news from the last 24 hours covering:
+Search for recent news from the last 30 days covering:
 - Breaking news and announcements
 - Analysis and opinion pieces
 - Financial and market news
@@ -202,7 +202,7 @@ Output structured JSON only:
 async function fetchGeneralElonNews(): Promise<ParsedPost[]> {
   console.log('Fetching general Elon Musk news...');
 
-  const query = `Latest news about Elon Musk from major news outlets in the last 24 hours.
+  const query = `Latest news about Elon Musk from major news outlets in the last 30 days.
 
 Focus on:
 - Major announcements and statements
@@ -254,7 +254,7 @@ async function analyzeTrendsAndSentiment(allPosts: ParsedPost[]): Promise<{ tren
 
   const postsSummary = allPosts.slice(0, 50).map(p => `- [${p.company}] ${p.title} (${p.sentiment})`).join('\n');
 
-  const query = `Analyze these posts/articles about Elon Musk and his companies from the last 24 hours:
+  const query = `Analyze these posts/articles about Elon Musk and his companies from the last 30 days:
 
 ${postsSummary}
 
@@ -341,7 +341,8 @@ export async function GET(request: NextRequest) {
     // Initialize database tables if they don't exist
     await initializeDatabase();
 
-    const fromDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    // Look back 30 days to gather more comprehensive data
+    const fromDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
     // Collect all posts from multiple sources
     const allPosts: ParsedPost[] = [];

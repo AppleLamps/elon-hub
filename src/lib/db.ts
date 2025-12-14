@@ -2,8 +2,8 @@ import { neon } from '@neondatabase/serverless';
 
 const sql = neon(process.env.DATABASE_URL!);
 
-// Retention period in hours
-const ARTICLE_RETENTION_HOURS = 48;
+// Retention period in hours (7 days)
+const ARTICLE_RETENTION_HOURS = 168;
 
 export interface Article {
   id?: number;
@@ -97,13 +97,13 @@ export async function initializeDatabase() {
 // Clean up articles older than retention period
 export async function cleanupOldArticles() {
   const cutoffTime = new Date(Date.now() - ARTICLE_RETENTION_HOURS * 60 * 60 * 1000);
-  
+
   const result = await sql`
     DELETE FROM articles 
     WHERE created_at < ${cutoffTime.toISOString()}
     RETURNING id
   `;
-  
+
   return result.length;
 }
 
@@ -202,12 +202,12 @@ export async function getRadarData() {
       score: row.score,
       sentiment: row.sentiment,
     })),
-    sentiment_overview: sentimentOverviewResult[0] 
+    sentiment_overview: sentimentOverviewResult[0]
       ? {
-          overall: sentimentOverviewResult[0].overall,
-          score: sentimentOverviewResult[0].score,
-          media_insights: sentimentOverviewResult[0].media_insights,
-        }
+        overall: sentimentOverviewResult[0].overall,
+        score: sentimentOverviewResult[0].score,
+        media_insights: sentimentOverviewResult[0].media_insights,
+      }
       : { overall: 'neutral', score: 0.5, media_insights: null },
   };
 }
