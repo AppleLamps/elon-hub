@@ -181,18 +181,18 @@ export default function Home() {
       <header className="border-b-2 border-black">
         <div className="max-w-[1200px] mx-auto px-4">
           {/* Top bar */}
-          <div className="flex items-center justify-between py-2 border-b border-gray-200 text-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 border-b border-gray-200 text-xs gap-1 sm:gap-0">
             <div className="dateline">{todayDate}</div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               {lastUpdate && (
                 <span className="dateline flex items-center gap-1">
                   <Clock className="w-3 h-3" />
-                  Last updated: {formatTime(lastUpdate)}
+                  {formatTime(lastUpdate)}
                 </span>
               )}
               {timeUntilUpdate && (
                 <span className="dateline">
-                  Next update in {timeUntilUpdate}
+                  Next: {timeUntilUpdate}
                 </span>
               )}
             </div>
@@ -203,20 +203,20 @@ export default function Home() {
             <h1 className="masthead text-5xl md:text-6xl tracking-tight">
               Elon Radar
             </h1>
-            <p className="dateline mt-1">Real-Time News & Sentiment Analysis · Updates Every 30 Minutes</p>
+            <p className="dateline mt-1">Real-Time News & Sentiment Analysis · Updates Daily</p>
           </div>
         </div>
       </header>
 
       {/* Navigation */}
       <nav className="border-b border-gray-300 bg-white sticky top-0 z-50">
-        <div className="max-w-[1200px] mx-auto px-4">
-          <div className="flex justify-center gap-0">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="flex overflow-x-auto scrollbar-hide px-4 sm:px-0 sm:justify-center">
             {categories.map((cat, i) => (
               <button
                 key={cat.id}
                 onClick={() => setActiveTab(cat.id)}
-                className={`nav-item px-5 py-3 transition-colors relative ${
+                className={`nav-item px-4 sm:px-5 py-3 transition-colors relative whitespace-nowrap flex-shrink-0 ${
                   activeTab === cat.id
                     ? 'text-black font-bold'
                     : 'text-gray-500 hover:text-black'
@@ -499,7 +499,7 @@ export default function Home() {
               Real-time news monitoring powered by xAI Grok
             </p>
             <p className="dateline mt-1">
-              © {new Date().getFullYear()} · Updates automatically every 30 minutes
+              © {new Date().getFullYear()} · Updates daily at 6 AM UTC
             </p>
           </div>
         </div>
