@@ -6,7 +6,7 @@ A real-time news monitoring and sentiment analysis platform focused on Elon Musk
 
 Elon Radar aggregates, analyzes, and visualizes news, social media posts, and updates from Elon Musk and his companies—Tesla, SpaceX, xAI, Neuralink, The Boring Company, and Starlink. The platform leverages advanced AI to autonomously search multiple sources, analyze visual content, and provide comprehensive sentiment analysis.
 
-**Updates automatically every 30 minutes** — articles are retained for **48 hours** to build a comprehensive news archive.
+**Updates automatically once daily at 6 AM UTC** — articles are retained for **48 hours** to build a comprehensive news archive.
 
 ## Features
 
@@ -16,7 +16,7 @@ Elon Radar aggregates, analyzes, and visualizes news, social media posts, and up
 - Web search across trusted news domains
 - Automatic categorization by company and topic
 - **Persistent storage** with Neon PostgreSQL database
-- **Scheduled updates** via Vercel Cron (every 30 minutes)
+- **Scheduled updates** via Vercel Cron (daily at 6 AM UTC)
 - **48-hour article retention** — articles accumulate over time, old ones automatically cleaned up
 
 ### Visual Content Analysis
@@ -110,7 +110,7 @@ Elon Radar aggregates, analyzes, and visualizes news, social media posts, and up
 
 ### How It Works
 
-1. **Vercel Cron** triggers `/api/cron/update` every 30 minutes
+1. **Vercel Cron** triggers `/api/cron/update` once daily at 6 AM UTC
 2. The cron endpoint calls xAI Grok to fetch latest news
 3. **New articles are added** to the database (duplicates are updated via URL matching)
 4. **Articles older than 48 hours** are automatically cleaned up
@@ -211,7 +211,7 @@ Fetches articles from the database (up to 48 hours of history).
 
 ### GET `/api/cron/update`
 
-Triggered by Vercel Cron every 30 minutes. Fetches fresh data from xAI, adds new articles, and cleans up old ones.
+Triggered by Vercel Cron once daily at 6 AM UTC. Fetches fresh data from xAI, adds new articles, and cleans up old ones.
 
 **Response:**
 
@@ -270,7 +270,7 @@ Navigate between categories using the top navigation bar:
 
 ### Automatic Updates
 
-- The system automatically updates every **30 minutes**
+- The system automatically updates **once daily at 6 AM UTC**
 - Articles are retained for **48 hours** before cleanup
 - Last update time is displayed in the header
 - Countdown shows time until next scheduled update
@@ -304,7 +304,7 @@ Each article displays:
 
 6. Trigger first data fetch: `https://your-app.vercel.app/api/cron/update`
 
-The cron job will automatically run every 30 minutes after deployment.
+The cron job will automatically run once daily at 6 AM UTC after deployment.
 
 ### Vercel Cron Configuration
 
@@ -315,7 +315,7 @@ The `vercel.json` includes:
   "crons": [
     {
       "path": "/api/cron/update",
-      "schedule": "*/30 * * * *"
+      "schedule": "0 6 * * *"
     }
   ]
 }
@@ -357,7 +357,7 @@ const ARTICLE_RETENTION_HOURS = 48;  // Change this value
 
 - API calls typically take 10-30 seconds
 - Results are stored in database for instant frontend loads
-- Cron runs every 30 minutes (48 calls/day)
+- Cron runs once daily at 6 AM UTC (1 call/day)
 - Estimated xAI cost: $0.05-0.20 per update
 - Neon free tier: 0.5 GB storage, sufficient for months of articles
 - Article count grows over time (typically 50-100 articles in a 48-hour window)
@@ -368,7 +368,7 @@ const ARTICLE_RETENTION_HOURS = 48;  // Change this value
 - Visual analysis increases token usage and costs
 - Some X posts may be unavailable due to privacy settings
 - Web search is limited to 5 domains (xAI API restriction)
-- Vercel Hobby plan: Cron jobs run once per day (upgrade for 30-min intervals)
+- Vercel Hobby plan: Cron jobs run once per day (current configuration)
 
 ## Contributing
 
